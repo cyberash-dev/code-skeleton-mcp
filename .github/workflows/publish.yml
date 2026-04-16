@@ -1,4 +1,4 @@
-name: Release
+name: Publish
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write   # Required for npm provenance
+  id-token: write # Required for npm trusted publishing + provenance
 
 jobs:
   publish:
@@ -18,12 +18,11 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          registry-url: https://registry.npmjs.org
+      # npm trusted publishing requires npm >= 11.5.1 (Node 22 ships ~10.x).
+      - run: npm install -g npm@latest
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
       - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
