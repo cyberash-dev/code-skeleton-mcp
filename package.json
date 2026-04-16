@@ -52,15 +52,15 @@
     "provenance": true
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
-    "web-tree-sitter": "^0.26.8",
-    "zod": "^3.25.0"
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "web-tree-sitter": "0.26.8",
+    "zod": "3.25.76"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.10",
-    "@types/node": "^22.10.0",
-    "tsx": "^4.21.0",
-    "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "@biomejs/biome": "2.3.10",
+    "@types/node": "22.19.17",
+    "tsx": "4.21.0",
+    "typescript": "5.9.3",
+    "vitest": "2.1.9"
   }
 }
