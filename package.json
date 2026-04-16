@@ -1,6 +1,6 @@
 {
   "name": "code-skeleton-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server that returns code outlines (classes, functions, signatures, docstrings) instead of full file contents. Saves ~40x tokens on typical exploration.",
   "type": "module",
   "bin": {
