@@ -1,0 +1,66 @@
+{
+  "name": "code-skeleton-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that returns code outlines (classes, functions, signatures, docstrings) instead of full file contents. Saves ~40x tokens on typical exploration.",
+  "type": "module",
+  "bin": {
+    "code-skeleton-mcp": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "wasm",
+    "queries",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && chmod +x dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "fetch-wasm": "node scripts/fetch-wasm.mjs",
+    "lint": "biome check src/ tests/ scripts/",
+    "lint:fix": "biome check --write src/ tests/ scripts/",
+    "format": "biome format --write src/ tests/ scripts/",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "tree-sitter",
+    "code-outline",
+    "ast",
+    "claude"
+  ],
+  "author": "cyberash-dev <mail@cyberash.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyberash-dev/code-skeleton-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cyberash-dev/code-skeleton-mcp/issues"
+  },
+  "homepage": "https://github.com/cyberash-dev/code-skeleton-mcp#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "web-tree-sitter": "^0.26.8",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.10",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
