@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/cyberash-dev/code-skeleton-mcp/main/assets/banner.png" alt="code-skeleton-mcp" width="100%" />
+</p>
+
 # code-skeleton-mcp
 
 MCP server that returns **code outlines** (classes, functions, signatures,
