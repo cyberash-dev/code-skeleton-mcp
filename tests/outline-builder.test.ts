@@ -31,7 +31,9 @@ describe("python outline", () => {
 
 		const top = symbols.find((s) => s.name === "top_level")!;
 		expect(top.kind).toBe("function");
-		expect(top.signature).toMatch(/def top_level\(x: int, y: int = 0\) -> int:/);
+		expect(top.signature).toMatch(
+			/def top_level\(x: int, y: int = 0\) -> int:/,
+		);
 		expect(top.docstring).toBe("Return x + y.");
 
 		const user = symbols.find((s) => s.name === "User")!;
@@ -56,7 +58,9 @@ describe("python outline", () => {
 
 	it("respects includePrivate", async () => {
 		const src = await load("python/sample.py");
-		const { symbols } = await buildOutline(src, "python", { includePrivate: true });
+		const { symbols } = await buildOutline(src, "python", {
+			includePrivate: true,
+		});
 		const names = symbols.map((s) => s.name);
 		expect(names).toContain("_module_private");
 		expect(names).toContain("_INTERNAL_FLAG");
@@ -103,7 +107,9 @@ describe("go outline", () => {
 			includePrivate: true,
 		});
 		const user = symbols.find((s) => s.name === "User")!;
-		const helper = (user.children ?? []).find((c) => c.name === "privateHelper")!;
+		const helper = (user.children ?? []).find(
+			(c) => c.name === "privateHelper",
+		)!;
 		expect(helper.isPrivate).toBe(true);
 	});
 });
@@ -111,7 +117,9 @@ describe("go outline", () => {
 describe("typescript outline", () => {
 	it("captures interface, class, methods, functions, arrow consts", async () => {
 		const src = await load("typescript/sample.ts");
-		const { symbols } = await buildOutline(src, "typescript", { includeDocstrings: true });
+		const { symbols } = await buildOutline(src, "typescript", {
+			includeDocstrings: true,
+		});
 		const names = symbols.map((s) => s.name);
 		expect(names).toContain("User");
 		expect(names).toContain("Greeter");
@@ -141,7 +149,9 @@ describe("typescript outline", () => {
 describe("javascript outline", () => {
 	it("captures class, methods, functions, arrow consts", async () => {
 		const src = await load("javascript/sample.js");
-		const { symbols } = await buildOutline(src, "javascript", { includeDocstrings: true });
+		const { symbols } = await buildOutline(src, "javascript", {
+			includeDocstrings: true,
+		});
 		const names = symbols.map((s) => s.name);
 		expect(names).toContain("User");
 		expect(names).toContain("topLevel");

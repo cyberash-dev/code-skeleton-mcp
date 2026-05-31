@@ -42,14 +42,21 @@ export class NodeFsAdapter implements FileSystemPort {
 		}
 	}
 
-	async listFiles(dir: string, opts: { recursive?: boolean } = {}): Promise<string[]> {
+	async listFiles(
+		dir: string,
+		opts: { recursive?: boolean } = {},
+	): Promise<string[]> {
 		const result: string[] = [];
 		await walk(dir, opts.recursive ?? false, result);
 		return result;
 	}
 }
 
-async function walk(dir: string, recursive: boolean, out: string[]): Promise<void> {
+async function walk(
+	dir: string,
+	recursive: boolean,
+	out: string[],
+): Promise<void> {
 	const entries = await readDirEntries(dir);
 	for (const e of entries) {
 		const full = path.join(dir, e.name);

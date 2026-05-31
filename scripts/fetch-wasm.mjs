@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import { spawn } from "node:child_process";
 import { createReadStream, createWriteStream } from "node:fs";
-// Refresh wasm/ and queries/ from upstream tree-sitter grammar releases.
-// Run manually: `npm run fetch-wasm`. Output is committed.
+/*
+ * Refresh wasm/ and queries/ from upstream tree-sitter grammar releases.
+ * Run manually: `npm run fetch-wasm`. Output is committed.
+ */
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pipeline } from "node:stream/promises";

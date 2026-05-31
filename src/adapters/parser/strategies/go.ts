@@ -34,7 +34,7 @@ export const goStrategy: LanguageStrategy = {
 		if (docNode) {
 			return parseGoDoc(docNode.text);
 		}
-		// type_spec has no doc capture (comment is before its type_declaration parent).
+		/* type_spec has no doc capture (comment is before its type_declaration parent). */
 		let target: Node = defNode;
 		while (
 			target.parent &&
@@ -95,7 +95,7 @@ function classifyTypeSpec(defNode: Node): SymbolKind {
 	if (defNode.type !== "type_spec") {
 		return "type-alias";
 	}
-	// child 'type' (field) — struct_type / interface_type / identifier (alias)
+	/* child 'type' (field) — struct_type / interface_type / identifier (alias) */
 	const typeField = defNode.childForFieldName("type");
 	if (!typeField) {
 		return "type-alias";
@@ -114,12 +114,13 @@ function receiverTypeName(methodNode: Node): string | null {
 	if (!recv) {
 		return null;
 	}
-	// receiver is parameter_list with a single parameter_declaration
+	/* receiver is parameter_list with a single parameter_declaration */
 	const params = recv.namedChildren;
 	for (const p of params) {
-		// parameter_declaration: type can be type_identifier or pointer_type
+		/* parameter_declaration: type can be type_identifier or pointer_type */
 		const typeField =
-			p.childForFieldName("type") ?? p.namedChildren.find((c) => c.type !== "identifier");
+			p.childForFieldName("type") ??
+			p.namedChildren.find((c) => c.type !== "identifier");
 		if (!typeField) {
 			continue;
 		}
@@ -127,7 +128,9 @@ function receiverTypeName(methodNode: Node): string | null {
 			return typeField.text;
 		}
 		if (typeField.type === "pointer_type") {
-			const inner = typeField.namedChildren.find((c) => c.type === "type_identifier");
+			const inner = typeField.namedChildren.find(
+				(c) => c.type === "type_identifier",
+			);
 			if (inner) {
 				return inner.text;
 			}

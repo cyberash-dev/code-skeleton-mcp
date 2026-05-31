@@ -1,6 +1,9 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { toolError, toolJsonResult } from "../../shared/tool-response.js";
-import { type GetFunctionInput, getFunctionInputSchema } from "./get-function.schema.js";
+import {
+	type GetFunctionInput,
+	getFunctionInputSchema,
+} from "./get-function.schema.js";
 import type { GetFunctionUseCase } from "./get-function.usecase.js";
 
 export function makeGetFunctionHandler(useCase: GetFunctionUseCase) {

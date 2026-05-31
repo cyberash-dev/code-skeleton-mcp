@@ -5,8 +5,30 @@ import path from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 import { ClaudeCodeTarget } from "../src/adapters/targets/claude-code.target.js";
 import { buildTargetRegistry } from "../src/adapters/targets/registry.js";
-import { getRuleBlock, hasBlock, removeBlock, upsertBlock } from "../src/features/setup/rules.js";
+import {
+	getRuleBlock,
+	hasBlock,
+	removeBlock,
+	upsertBlock,
+} from "../src/features/setup/rules.js";
 import { SetupUseCase } from "../src/features/setup/setup.usecase.js";
+
+interface ClaudeJson {
+	numStartups?: number;
+	mcpServers: Record<string, { command: string; args?: string[] }>;
+}
+
+function isClaudeJson(value: unknown): value is ClaudeJson {
+	return typeof value === "object" && value !== null;
+}
+
+async function readClaudeJson(path: string): Promise<ClaudeJson> {
+	const parsed: unknown = JSON.parse(await readFile(path, "utf8"));
+	if (!isClaudeJson(parsed)) {
+		throw new Error(`expected a JSON object at ${path}`);
+	}
+	return parsed;
+}
 
 async function makeHome(): Promise<string> {
 	return mkdtemp(path.join(tmpdir(), "code-skeleton-setup-"));
@@ -125,16 +147,21 @@ describe("ClaudeCodeTarget", () => {
 			{ dryRun: false },
 		);
 		expect(res.changed).toBe(true);
-		const cfg = JSON.parse(await readFile(cfgPath, "utf8"));
+		const cfg = await readClaudeJson(cfgPath);
 		expect(cfg.numStartups).toBe(5);
-		expect(Object.keys(cfg.mcpServers)).toEqual(["other-server", "code-skeleton"]);
+		expect(Object.keys(cfg.mcpServers)).toEqual([
+			"other-server",
+			"code-skeleton",
+		]);
 		expect(cfg.mcpServers["code-skeleton"].command).toBe("npx");
 	});
 
 	it("applyMcp is idempotent", async () => {
 		const entry = { command: "npx", args: ["-y", "code-skeleton-mcp"] };
 		await target.applyMcp("code-skeleton", entry, { dryRun: false });
-		const res = await target.applyMcp("code-skeleton", entry, { dryRun: false });
+		const res = await target.applyMcp("code-skeleton", entry, {
+			dryRun: false,
+		});
 		expect(res.changed).toBe(false);
 	});
 
@@ -146,7 +173,10 @@ describe("ClaudeCodeTarget", () => {
 				{
 					mcpServers: {
 						keep: { command: "node", args: ["x"] },
-						"code-skeleton": { command: "npx", args: ["-y", "code-skeleton-mcp"] },
+						"code-skeleton": {
+							command: "npx",
+							args: ["-y", "code-skeleton-mcp"],
+						},
 					},
 				},
 				null,
@@ -155,7 +185,7 @@ describe("ClaudeCodeTarget", () => {
 		);
 		const res = await target.removeMcp("code-skeleton", { dryRun: false });
 		expect(res.changed).toBe(true);
-		const cfg = JSON.parse(await readFile(cfgPath, "utf8"));
+		const cfg = await readClaudeJson(cfgPath);
 		expect(cfg.mcpServers).toEqual({ keep: { command: "node", args: ["x"] } });
 	});
 
@@ -171,7 +201,8 @@ describe("SetupUseCase", () => {
 		const home = await makeHome();
 		const registry = {
 			all: [new ClaudeCodeTarget(home)],
-			get: (id: string) => (id === "claude-code" ? new ClaudeCodeTarget(home) : undefined),
+			get: (id: string) =>
+				id === "claude-code" ? new ClaudeCodeTarget(home) : undefined,
 			resolveIds: () => [new ClaudeCodeTarget(home)],
 		};
 		const useCase = new SetupUseCase(registry);

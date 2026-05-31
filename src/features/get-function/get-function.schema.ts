@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 export const getFunctionInputSchema = z.object({
-	path: z.string().min(1).describe("File containing the target function or method."),
+	path: z
+		.string()
+		.min(1)
+		.describe("File containing the target function or method."),
 	symbol: z
 		.string()
 		.min(1)

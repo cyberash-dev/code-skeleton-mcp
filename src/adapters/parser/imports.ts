@@ -3,7 +3,10 @@ import type { Language } from "../../domain/language.js";
 import type { ImportRef } from "../../domain/symbol.js";
 import { parseSource } from "./runtime.js";
 
-export async function extractImports(source: string, language: Language): Promise<ImportRef[]> {
+export async function extractImports(
+	source: string,
+	language: Language,
+): Promise<ImportRef[]> {
 	const tree = await parseSource(source, language);
 	switch (language) {
 		case "python":
@@ -16,7 +19,7 @@ export async function extractImports(source: string, language: Language): Promis
 			return extractJs(tree.rootNode, source);
 		default: {
 			const never: never = language;
-			throw new Error(`No import extractor for ${never}`);
+			throw new Error(`No import extractor for ${String(never)}`);
 		}
 	}
 }
@@ -60,7 +63,7 @@ function resolveFromModule(node: Node): string | null {
 			return moduleField.text;
 		}
 	}
-	// Fallback: inspect first named child.
+	/* Fallback: inspect first named child. */
 	for (const c of node.namedChildren) {
 		if (c.type === "dotted_name" || c.type === "relative_import") {
 			return c.text;
@@ -69,7 +72,11 @@ function resolveFromModule(node: Node): string | null {
 	return null;
 }
 
-function classifyPython(raw: string, moduleName: string, line: number): ImportRef {
+function classifyPython(
+	raw: string,
+	moduleName: string,
+	line: number,
+): ImportRef {
 	const isRelative = moduleName.startsWith(".");
 	const top = moduleName.split(".")[0] ?? moduleName;
 	const isStdlib = !isRelative && PYTHON_STDLIB.has(top);
@@ -83,14 +90,15 @@ function extractGo(root: Node, source: string): ImportRef[] {
 		if (n.type !== "import_declaration") {
 			return;
 		}
-		// import_declaration contains either import_spec or import_spec_list (containing import_specs)
+		/* import_declaration contains either import_spec or import_spec_list (containing import_specs) */
 		const specs = n.descendantsOfType("import_spec");
 		for (const spec of specs) {
 			const pathNode =
 				spec.childForFieldName("path") ??
 				spec.namedChildren.find(
 					(c) =>
-						c.type === "interpreted_string_literal" || c.type === "raw_string_literal",
+						c.type === "interpreted_string_literal" ||
+						c.type === "raw_string_literal",
 				);
 			if (!pathNode) {
 				continue;
@@ -105,7 +113,8 @@ function extractGo(root: Node, source: string): ImportRef[] {
 
 function classifyGo(raw: string, moduleName: string, line: number): ImportRef {
 	const isRelative = false;
-	const isStdlib = !moduleName.includes(".") || moduleName.startsWith("golang.org/x/");
+	const isStdlib =
+		!moduleName.includes(".") || moduleName.startsWith("golang.org/x/");
 	return {
 		raw,
 		module: moduleName,
@@ -121,7 +130,8 @@ function extractJs(root: Node, source: string): ImportRef[] {
 	walk(root, (n) => {
 		if (n.type === "import_statement") {
 			const src =
-				n.childForFieldName("source") ?? n.namedChildren.find((c) => c.type === "string");
+				n.childForFieldName("source") ??
+				n.namedChildren.find((c) => c.type === "string");
 			if (!src) {
 				return;
 			}
@@ -164,9 +174,17 @@ function classifyJs(raw: string, moduleName: string, line: number): ImportRef {
 		moduleName.startsWith("../") ||
 		moduleName === "." ||
 		moduleName === "..";
-	const isNodeBuiltin = moduleName.startsWith("node:") || NODE_STDLIB.has(moduleName);
+	const isNodeBuiltin =
+		moduleName.startsWith("node:") || NODE_STDLIB.has(moduleName);
 	const isThirdParty = !isRelative && !isNodeBuiltin;
-	return { raw, module: moduleName, isStdlib: isNodeBuiltin, isThirdParty, isRelative, line };
+	return {
+		raw,
+		module: moduleName,
+		isStdlib: isNodeBuiltin,
+		isThirdParty,
+		isRelative,
+		line,
+	};
 }
 
 function walk(node: Node, visit: (n: Node) => void): void {

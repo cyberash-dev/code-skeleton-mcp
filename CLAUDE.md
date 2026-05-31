@@ -16,7 +16,9 @@ one-shot `setup` installer that wires the server into AI coding tools.
 - `npm test` — Vitest suite.
 - `npx vitest run tests/setup.test.ts` — single file.
 - `npx vitest -t "applyRules twice is idempotent"` — by test name.
-- `npm run lint` / `lint:fix` / `format` — Biome (config in `biome.json`).
+- `npm run lint` / `lint:fix` — ESLint (config in `eslint.config.mjs`).
+- `npm run format` / `format:check` — Prettier (shared base from
+  `@cyberash-dev/dev-tooling`).
 - `npm run typecheck` — `tsc --noEmit`.
 - `npm run build` — emits to `dist/` via `tsconfig.build.json`, also
   chmod +x on the bin entry.
@@ -43,10 +45,10 @@ Vertical Slice + Hexagonal (Ports & Adapters).
     `detect`/`status` for any AI-tool config target.
 - **`src/adapters/`** — implementations of ports:
   - `parser/tree-sitter.adapter.ts` + `runtime.ts` (WASM init, query cache)
-    + `outline-builder.ts` (AST → `BuiltSymbol` tree) +
-    `strategies/{python,go,typescript}.ts` (language-specific kind
-    mapping, signature extraction, docstring extraction, privacy rules,
-    overload detection, regroup of Go methods under their receiver type).
+    - `outline-builder.ts` (AST → `BuiltSymbol` tree) +
+      `strategies/{python,go,typescript}.ts` (language-specific kind
+      mapping, signature extraction, docstring extraction, privacy rules,
+      overload detection, regroup of Go methods under their receiver type).
   - `file-system/node-fs.adapter.ts`, `cache/in-memory.adapter.ts`.
   - `targets/claude-code.target.ts` + `registry.ts` — install targets.
 - **`src/features/`** — one vertical slice per tool or CLI feature:
@@ -100,18 +102,20 @@ applicable), imports of stdlib / third-party / relative.
   `ClaudeCodeTarget` against a temp `$HOME`, preservation of unrelated
   content/other MCP servers.
 
-Fixtures under `tests/fixtures/**` are **excluded** from biome (config
-`files.includes`) and from tsc (via `tsconfig.json` exclude) because
-they are deliberately "imperfect" code samples — linters must not
-rewrite them. If a fixture import gets stripped by an `--unsafe` biome
-pass, restore it manually.
+Fixtures under `tests/fixtures/**` are **excluded** from ESLint and
+Prettier (ignores in `eslint.config.mjs` and `.prettierignore`) and from
+tsc (via `tsconfig.json` exclude) because they are deliberately
+"imperfect" code samples — linters must not rewrite them.
 
 ## Conventions
 
-- Code style enforced by Biome: tab indent width 4, line 100, double
-  quotes, trailing commas, semicolons, `useBlockStatements` required.
-- Tests override `noNonNullAssertion` + `noNonNullAssertedOptionalChain`
-  off — `arr[0]!` is fine in assertions.
+- Tooling comes from `@cyberash-dev/dev-tooling`: Prettier owns
+  formatting (tabs, double quotes, trailing commas, semicolons); ESLint
+  enforces a strict type-aware base plus comment policy and structural
+  caps (80-line functions, 7 params, 10 public members per class).
+- Tests override (in `eslint.config.mjs`): `no-non-null-assertion`,
+  `no-non-null-asserted-optional-chain` and `max-lines-per-function` are
+  off — `arr[0]!` and long `describe` blocks are fine in tests.
 - One public class or handler per file. Helpers inside the same file
   are allowed if private.
 - Naming (from user's global CLAUDE.md): classes/types PascalCase;

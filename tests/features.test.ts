@@ -148,7 +148,9 @@ describe("get-class", () => {
 			include_bodies: false,
 		});
 		expect(res.signature).toMatch(/User struct/);
-		expect(res.methods.map((m) => m.name).sort()).toEqual(["Greet", "privateHelper"].sort());
+		expect(res.methods.map((m) => m.name).sort()).toEqual(
+			["Greet", "privateHelper"].sort(),
+		);
 	});
 });
 

@@ -67,7 +67,11 @@ export class TreeSitterParserAdapter implements ParserPort {
 		if (!cls) {
 			return null;
 		}
-		if (cls.kind !== "class" && cls.kind !== "interface" && cls.kind !== "struct") {
+		if (
+			cls.kind !== "class" &&
+			cls.kind !== "interface" &&
+			cls.kind !== "struct"
+		) {
 			return null;
 		}
 		const methods: ClassMethodEntry[] = (cls.children ?? [])
@@ -105,7 +109,11 @@ function findByPath(built: BuiltSymbol[], path: string): BuiltSymbol[] {
 	return collect(built, parts, 0);
 }
 
-function collect(list: BuiltSymbol[], parts: string[], idx: number): BuiltSymbol[] {
+function collect(
+	list: BuiltSymbol[],
+	parts: string[],
+	idx: number,
+): BuiltSymbol[] {
 	if (idx >= parts.length) {
 		return [];
 	}

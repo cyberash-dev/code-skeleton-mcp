@@ -6,8 +6,10 @@ import { ParseError } from "../../domain/errors.js";
 import type { Language as DomainLanguage } from "../../domain/language.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
-// src/adapters/parser/runtime.ts  → ../../..  = project root
-// dist/adapters/parser/runtime.js → ../../..  = project root
+/*
+ * src/adapters/parser/runtime.ts  → ../../..  = project root
+ * dist/adapters/parser/runtime.js → ../../..  = project root
+ */
 const ROOT = resolve(here, "..", "..", "..");
 
 const WASM_FILES: Record<DomainLanguage, string> = {
@@ -22,14 +24,19 @@ const QUERY_FILES: Record<DomainLanguage, string[]> = {
 	python: ["python.scm"],
 	go: ["go.scm", "go.local.scm"],
 	javascript: ["javascript.scm", "javascript.local.scm"],
-	// TypeScript tags.scm extends JavaScript's — concat both.
+	/* TypeScript tags.scm extends JavaScript's — concat both. */
 	typescript: [
 		"javascript.scm",
 		"javascript.local.scm",
 		"typescript.scm",
 		"typescript.local.scm",
 	],
-	tsx: ["javascript.scm", "javascript.local.scm", "typescript.scm", "typescript.local.scm"],
+	tsx: [
+		"javascript.scm",
+		"javascript.local.scm",
+		"typescript.scm",
+		"typescript.local.scm",
+	],
 };
 
 let initPromise: Promise<void> | null = null;
@@ -70,7 +77,10 @@ export async function getQuery(lang: DomainLanguage): Promise<Query> {
 	return query;
 }
 
-export async function parseSource(source: string, lang: DomainLanguage): Promise<Tree> {
+export async function parseSource(
+	source: string,
+	lang: DomainLanguage,
+): Promise<Tree> {
 	const language = await getLanguage(lang);
 	const parser = new Parser();
 	parser.setLanguage(language);

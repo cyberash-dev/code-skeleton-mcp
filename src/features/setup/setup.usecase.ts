@@ -1,5 +1,8 @@
 import type { TargetRegistry } from "../../adapters/targets/registry.js";
-import type { InstallTarget, McpServerEntry } from "../../ports/install-target.port.js";
+import type {
+	InstallTarget,
+	McpServerEntry,
+} from "../../ports/install-target.port.js";
 import { getRuleBlock } from "./rules.js";
 
 export type SetupAction = "install" | "uninstall";

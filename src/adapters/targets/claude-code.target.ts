@@ -16,6 +16,14 @@ import type {
 	TargetStatus,
 } from "../../ports/install-target.port.js";
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null;
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+	return isRecord(value) ? value : {};
+}
+
 export class ClaudeCodeTarget implements InstallTarget {
 	readonly id = "claude-code";
 	readonly name = "Claude Code CLI";
@@ -29,7 +37,7 @@ export class ClaudeCodeTarget implements InstallTarget {
 	}
 
 	async detect(): Promise<boolean> {
-		// Consider Claude Code configured if either file exists.
+		/* Consider Claude Code configured if either file exists. */
 		return (await exists(this.rulesFile)) || (await exists(this.mcpFile));
 	}
 
@@ -53,7 +61,10 @@ export class ClaudeCodeTarget implements InstallTarget {
 		};
 	}
 
-	async applyRules(block: RuleBlock, opts: { dryRun: boolean }): Promise<ApplyResult> {
+	async applyRules(
+		block: RuleBlock,
+		opts: { dryRun: boolean },
+	): Promise<ApplyResult> {
 		const before = (await readIfExists(this.rulesFile)) ?? "";
 		const after = upsertBlock(before, block);
 		if (before === after) {
@@ -63,10 +74,17 @@ export class ClaudeCodeTarget implements InstallTarget {
 			await fs.mkdir(path.dirname(this.rulesFile), { recursive: true });
 			await fs.writeFile(this.rulesFile, after, "utf8");
 		}
-		return { changed: true, path: this.rulesFile, preview: makeDiffPreview(before, after) };
+		return {
+			changed: true,
+			path: this.rulesFile,
+			preview: makeDiffPreview(before, after),
+		};
 	}
 
-	async removeRules(block: RuleBlock, opts: { dryRun: boolean }): Promise<ApplyResult> {
+	async removeRules(
+		block: RuleBlock,
+		opts: { dryRun: boolean },
+	): Promise<ApplyResult> {
 		const before = await readIfExists(this.rulesFile);
 		if (before === null) {
 			return { changed: false, path: this.rulesFile };
@@ -78,7 +96,11 @@ export class ClaudeCodeTarget implements InstallTarget {
 		if (!opts.dryRun) {
 			await fs.writeFile(this.rulesFile, after, "utf8");
 		}
-		return { changed: true, path: this.rulesFile, preview: makeDiffPreview(before, after) };
+		return {
+			changed: true,
+			path: this.rulesFile,
+			preview: makeDiffPreview(before, after),
+		};
 	}
 
 	async applyMcp(
@@ -87,10 +109,11 @@ export class ClaudeCodeTarget implements InstallTarget {
 		opts: { dryRun: boolean },
 	): Promise<ApplyResult> {
 		const existing = await loadJson(this.mcpFile);
-		const config = (existing ?? {}) as Record<string, unknown>;
-		const servers = (config.mcpServers as Record<string, unknown> | undefined) ?? {};
+		const config = asRecord(existing);
+		const servers = asRecord(config.mcpServers);
 		const prev = servers[name];
-		const sameEntry = prev !== undefined && JSON.stringify(prev) === JSON.stringify(entry);
+		const sameEntry =
+			prev !== undefined && JSON.stringify(prev) === JSON.stringify(entry);
 		if (sameEntry) {
 			return { changed: false, path: this.mcpFile };
 		}
@@ -102,13 +125,16 @@ export class ClaudeCodeTarget implements InstallTarget {
 		return { changed: true, path: this.mcpFile };
 	}
 
-	async removeMcp(name: string, opts: { dryRun: boolean }): Promise<ApplyResult> {
+	async removeMcp(
+		name: string,
+		opts: { dryRun: boolean },
+	): Promise<ApplyResult> {
 		const existing = await loadJson(this.mcpFile);
 		if (existing === null) {
 			return { changed: false, path: this.mcpFile };
 		}
-		const config = existing as Record<string, unknown>;
-		const servers = config.mcpServers as Record<string, unknown> | undefined;
+		const config = asRecord(existing);
+		const servers = asRecord(config.mcpServers);
 		if (!servers || !(name in servers)) {
 			return { changed: false, path: this.mcpFile };
 		}
@@ -154,11 +180,11 @@ async function writeJson(filePath: string, value: unknown): Promise<void> {
 }
 
 async function readMcpEntry(filePath: string, name: string): Promise<unknown> {
-	const data = (await loadJson(filePath)) as Record<string, unknown> | null;
+	const data = asRecord(await loadJson(filePath));
 	if (!data) {
 		return null;
 	}
-	const servers = data.mcpServers as Record<string, unknown> | undefined;
+	const servers = asRecord(data.mcpServers);
 	return servers?.[name] ?? null;
 }
 

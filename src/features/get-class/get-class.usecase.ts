@@ -1,4 +1,7 @@
-import { SymbolNotFoundError, UnsupportedLanguageError } from "../../domain/errors.js";
+import {
+	SymbolNotFoundError,
+	UnsupportedLanguageError,
+} from "../../domain/errors.js";
 import { detectFromPath } from "../../domain/language.js";
 import type { FileSystemPort } from "../../ports/file-system.port.js";
 import type { ClassDumpResult, ParserPort } from "../../ports/parser.port.js";

@@ -11,7 +11,11 @@ export interface RegroupContext {
 export interface LanguageStrategy {
 	mapKind(defKind: string, defNode: Node, nameNode: Node): SymbolKind | null;
 	extractSignature(defNode: Node, source: string): string;
-	extractDocstring(defNode: Node, docNode: Node | null, source: string): string | undefined;
+	extractDocstring(
+		defNode: Node,
+		docNode: Node | null,
+		source: string,
+	): string | undefined;
 	isPrivate(name: string, defNode: Node): boolean;
 	isOverload(defNode: Node): boolean;
 	regroup?(ctx: RegroupContext): void;

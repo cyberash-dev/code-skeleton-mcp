@@ -18,7 +18,7 @@ export function getStrategy(lang: Language): LanguageStrategy {
 			return typescriptStrategy;
 		default: {
 			const never: never = lang;
-			throw new Error(`No strategy for language: ${never}`);
+			throw new Error(`No strategy for language: ${String(never)}`);
 		}
 	}
 }

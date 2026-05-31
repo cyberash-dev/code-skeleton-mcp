@@ -16,16 +16,16 @@ export async function runMcpServer(container: Container): Promise<void> {
 		version: getPackageVersion(),
 	});
 
-	const tools = [
-		makeGetOutlineHandler(container.useCases.getOutline),
-		makeGetFunctionHandler(container.useCases.getFunction),
-		makeGetClassHandler(container.useCases.getClass),
-		makeGetImportsHandler(container.useCases.getImports),
-	];
+	const outline = makeGetOutlineHandler(container.useCases.getOutline);
+	const fn = makeGetFunctionHandler(container.useCases.getFunction);
+	const cls = makeGetClassHandler(container.useCases.getClass);
+	const imports = makeGetImportsHandler(container.useCases.getImports);
+	server.registerTool(outline.name, outline.config, outline.handler);
+	server.registerTool(fn.name, fn.config, fn.handler);
+	server.registerTool(cls.name, cls.config, cls.handler);
+	server.registerTool(imports.name, imports.config, imports.handler);
 
-	for (const tool of tools) {
-		server.registerTool(tool.name, tool.config, tool.handler as never);
-	}
+	const tools = [outline, fn, cls, imports];
 
 	const transport = new StdioServerTransport();
 	await server.connect(transport);
@@ -36,8 +36,16 @@ function getPackageVersion(): string {
 	try {
 		const here = dirname(fileURLToPath(import.meta.url));
 		const pkgPath = resolve(here, "..", "package.json");
-		const pkg = JSON.parse(readFileSync(pkgPath, "utf8")) as { version?: string };
-		return pkg.version ?? "0.0.0";
+		const pkg: unknown = JSON.parse(readFileSync(pkgPath, "utf8"));
+		if (
+			typeof pkg === "object" &&
+			pkg !== null &&
+			"version" in pkg &&
+			typeof pkg.version === "string"
+		) {
+			return pkg.version;
+		}
+		return "0.0.0";
 	} catch {
 		return "0.0.0";
 	}

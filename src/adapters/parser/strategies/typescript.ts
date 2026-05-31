@@ -30,7 +30,8 @@ export const typescriptStrategy: LanguageStrategy = {
 
 	extractSignature(defNode: Node, source: string): string {
 		const innerFn = findNestedFunctionLike(defNode);
-		const body = innerFn?.childForFieldName("body") ?? defNode.childForFieldName("body");
+		const body =
+			innerFn?.childForFieldName("body") ?? defNode.childForFieldName("body");
 		const end = body ? body.startIndex : defNode.endIndex;
 		const raw = source.slice(defNode.startIndex, end);
 		return raw.replace(/\s*=>?\s*$/u, "").trimEnd();
@@ -40,7 +41,7 @@ export const typescriptStrategy: LanguageStrategy = {
 		if (docNode) {
 			return extractJsDocFirstLine(docNode.text);
 		}
-		// Walk up through export_statement wrappers and take preceding comment.
+		/* Walk up through export_statement wrappers and take preceding comment. */
 		let target: Node = defNode;
 		while (target.parent && target.parent.type === "export_statement") {
 			target = target.parent;
@@ -69,8 +70,10 @@ export const typescriptStrategy: LanguageStrategy = {
 	},
 
 	isOverload(defNode: Node): boolean {
-		// TS function overloads: adjacent function_declaration nodes with same name where
-		// all but the last have no body.
+		/*
+		 * TS function overloads: adjacent function_declaration nodes with same name where
+		 * all but the last have no body.
+		 */
 		if (defNode.type === "function_declaration") {
 			return defNode.childForFieldName("body") === null;
 		}
@@ -88,8 +91,10 @@ export const typescriptStrategy: LanguageStrategy = {
 };
 
 function mapFunctionLike(defNode: Node): SymbolKind {
-	// JS tags.scm may capture a lexical_declaration whose value is an arrow function.
-	// That's still a top-level function from the user's POV.
+	/*
+	 * JS tags.scm may capture a lexical_declaration whose value is an arrow function.
+	 * That's still a top-level function from the user's POV.
+	 */
 	if (isInsideClassBody(defNode)) {
 		return "method";
 	}
@@ -114,10 +119,17 @@ function isInsideClassBody(node: Node): boolean {
 }
 
 function findNestedFunctionLike(defNode: Node): Node | null {
-	// For lexical_declaration / variable_declaration with arrow/function expression,
-	// the actual body lives inside the declarator's value.
-	if (defNode.type === "lexical_declaration" || defNode.type === "variable_declaration") {
-		const declarator = defNode.namedChildren.find((n) => n.type === "variable_declarator");
+	/*
+	 * For lexical_declaration / variable_declaration with arrow/function expression,
+	 * the actual body lives inside the declarator's value.
+	 */
+	if (
+		defNode.type === "lexical_declaration" ||
+		defNode.type === "variable_declaration"
+	) {
+		const declarator = defNode.namedChildren.find(
+			(n) => n.type === "variable_declarator",
+		);
 		if (!declarator) {
 			return null;
 		}
@@ -125,14 +137,21 @@ function findNestedFunctionLike(defNode: Node): Node | null {
 		if (!value) {
 			return null;
 		}
-		if (value.type === "arrow_function" || value.type === "function_expression") {
+		if (
+			value.type === "arrow_function" ||
+			value.type === "function_expression"
+		) {
 			return value;
 		}
 		return null;
 	}
 	if (defNode.type === "assignment_expression" || defNode.type === "pair") {
-		const right = defNode.childForFieldName("right") ?? defNode.childForFieldName("value");
-		if (right && (right.type === "arrow_function" || right.type === "function_expression")) {
+		const right =
+			defNode.childForFieldName("right") ?? defNode.childForFieldName("value");
+		if (
+			right &&
+			(right.type === "arrow_function" || right.type === "function_expression")
+		) {
 			return right;
 		}
 		return null;

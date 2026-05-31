@@ -1,13 +1,24 @@
 import type { Container } from "./composition-root.js";
-import type { SetupAction, SetupReport } from "./features/setup/setup.usecase.js";
+import type {
+	SetupAction,
+	SetupReport,
+} from "./features/setup/setup.usecase.js";
 
 export interface CliResult {
 	exitCode: number;
 }
 
-export async function runCli(container: Container, argv: string[]): Promise<CliResult> {
+export async function runCli(
+	container: Container,
+	argv: string[],
+): Promise<CliResult> {
 	const [command, ...rest] = argv;
-	if (!command || command === "--help" || command === "-h" || command === "help") {
+	if (
+		!command ||
+		command === "--help" ||
+		command === "-h" ||
+		command === "help"
+	) {
 		printHelp();
 		return { exitCode: command ? 0 : 1 };
 	}
@@ -56,7 +67,10 @@ or "all") to pick multiple. Run --dry-run to preview without writing.
 `);
 }
 
-async function outlineCmd(container: Container, args: string[]): Promise<CliResult> {
+async function outlineCmd(
+	container: Container,
+	args: string[],
+): Promise<CliResult> {
 	const { positional, flags } = parseArgs(args);
 	const target = positional[0];
 	if (!target) {
@@ -73,18 +87,27 @@ async function outlineCmd(container: Container, args: string[]): Promise<CliResu
 	return { exitCode: 0 };
 }
 
-async function functionCmd(container: Container, args: string[]): Promise<CliResult> {
+async function functionCmd(
+	container: Container,
+	args: string[],
+): Promise<CliResult> {
 	const { positional } = parseArgs(args);
 	const [target, symbol] = positional;
 	if (!target || !symbol) {
 		throw new Error("function: <path> <symbol> required");
 	}
-	const result = await container.useCases.getFunction.execute({ path: target, symbol });
+	const result = await container.useCases.getFunction.execute({
+		path: target,
+		symbol,
+	});
 	process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 	return { exitCode: 0 };
 }
 
-async function classCmd(container: Container, args: string[]): Promise<CliResult> {
+async function classCmd(
+	container: Container,
+	args: string[],
+): Promise<CliResult> {
 	const { positional, flags } = parseArgs(args);
 	const [target, symbol] = positional;
 	if (!target || !symbol) {
@@ -99,7 +122,10 @@ async function classCmd(container: Container, args: string[]): Promise<CliResult
 	return { exitCode: 0 };
 }
 
-async function importsCmd(container: Container, args: string[]): Promise<CliResult> {
+async function importsCmd(
+	container: Container,
+	args: string[],
+): Promise<CliResult> {
 	const { positional } = parseArgs(args);
 	const target = positional[0];
 	if (!target) {
@@ -139,15 +165,22 @@ function parseArgs(args: string[]): ParsedArgs {
 	return { positional, flags };
 }
 
-async function setupCmd(container: Container, args: string[]): Promise<CliResult> {
+async function setupCmd(
+	container: Container,
+	args: string[],
+): Promise<CliResult> {
 	const { flags } = parseArgs(args);
-	const action: SetupAction = flags.uninstall === true ? "uninstall" : "install";
+	const action: SetupAction =
+		flags.uninstall === true ? "uninstall" : "install";
 	const rulesOnly = flags["rules-only"] === true;
 	const mcpOnly = flags["mcp-only"] === true;
 	if (rulesOnly && mcpOnly) {
-		throw new Error("setup: --rules-only and --mcp-only are mutually exclusive");
+		throw new Error(
+			"setup: --rules-only and --mcp-only are mutually exclusive",
+		);
 	}
-	const targetSpec = typeof flags.target === "string" ? flags.target : "claude-code";
+	const targetSpec =
+		typeof flags.target === "string" ? flags.target : "claude-code";
 	const dryRun = flags["dry-run"] === true;
 	const yes = flags.yes === true || flags.y === true || dryRun;
 
@@ -170,13 +203,19 @@ async function setupCmd(container: Container, args: string[]): Promise<CliResult
 		return { exitCode: 1 };
 	}
 
-	const applied = await container.useCases.setup.execute({ ...input, dryRun: false });
+	const applied = await container.useCases.setup.execute({
+		...input,
+		dryRun: false,
+	});
 	process.stderr.write(action === "install" ? "installed\n" : "uninstalled\n");
 	void applied;
 	return { exitCode: 0 };
 }
 
-function printSetupReport(report: SetupReport, opts: { dryRun: boolean }): void {
+function printSetupReport(
+	report: SetupReport,
+	opts: { dryRun: boolean },
+): void {
 	const verb = report.action === "install" ? "would install" : "would remove";
 	const prefix = opts.dryRun ? `[dry-run] ${verb}` : verb;
 	for (const target of report.targets) {

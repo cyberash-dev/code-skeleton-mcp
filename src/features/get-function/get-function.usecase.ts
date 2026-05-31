@@ -1,4 +1,7 @@
-import { SymbolNotFoundError, UnsupportedLanguageError } from "../../domain/errors.js";
+import {
+	SymbolNotFoundError,
+	UnsupportedLanguageError,
+} from "../../domain/errors.js";
 import { detectFromPath } from "../../domain/language.js";
 import type { FileSystemPort } from "../../ports/file-system.port.js";
 import type { FunctionVariant, ParserPort } from "../../ports/parser.port.js";
@@ -26,6 +29,10 @@ export class GetFunctionUseCase {
 		if (!result) {
 			throw new SymbolNotFoundError(input.symbol, input.path);
 		}
-		return { path: input.path, symbol: input.symbol, variants: result.variants };
+		return {
+			path: input.path,
+			symbol: input.symbol,
+			variants: result.variants,
+		};
 	}
 }
