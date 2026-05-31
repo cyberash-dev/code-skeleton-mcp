@@ -12,12 +12,12 @@ WebAssembly, so there is no native compilation step — it installs cleanly via
 
 ## Tools
 
-| Tool            | What it returns                                                                      |
-|-----------------|--------------------------------------------------------------------------------------|
-| `get_outline`   | File or directory outline: classes, methods, functions, constants, first-line docs. |
-| `get_function`  | Source of a single function/method by dotted path (e.g. `User.greet`).               |
-| `get_class`     | A class/interface/struct with method signatures (bodies optional).                   |
-| `get_imports`   | Parsed imports with `isStdlib` / `isThirdParty` / `isRelative` flags and best-effort relative-path resolution. |
+| Tool           | What it returns                                                                                                |
+| -------------- | -------------------------------------------------------------------------------------------------------------- |
+| `get_outline`  | File or directory outline: classes, methods, functions, constants, first-line docs.                            |
+| `get_function` | Source of a single function/method by dotted path (e.g. `User.greet`).                                         |
+| `get_class`    | A class/interface/struct with method signatures (bodies optional).                                             |
+| `get_imports`  | Parsed imports with `isStdlib` / `isThirdParty` / `isRelative` flags and best-effort relative-path resolution. |
 
 ## Quick setup
 
@@ -32,6 +32,7 @@ npx code-skeleton-mcp setup --uninstall # clean removal
 ```
 
 What it does for `--target claude-code`:
+
 - Appends a rules block to `~/.claude/CLAUDE.md` (wrapped in
   `<!-- code-skeleton-mcp:rules:start/end -->` markers — re-runs update in
   place, `--uninstall` removes cleanly without touching anything else).
@@ -40,14 +41,14 @@ What it does for `--target claude-code`:
 
 Flags:
 
-| Flag            | Effect                                                           |
-|-----------------|------------------------------------------------------------------|
-| `--target <id>` | Comma-separated target IDs. Default `claude-code`. `all` → all.  |
-| `--rules-only`  | Skip MCP registration.                                           |
-| `--mcp-only`    | Skip CLAUDE.md rules.                                            |
-| `--uninstall`   | Remove instead of install.                                       |
-| `--dry-run`     | Preview paths and changes without writing.                       |
-| `--yes`, `-y`   | Don't prompt for confirmation.                                   |
+| Flag            | Effect                                                          |
+| --------------- | --------------------------------------------------------------- |
+| `--target <id>` | Comma-separated target IDs. Default `claude-code`. `all` → all. |
+| `--rules-only`  | Skip MCP registration.                                          |
+| `--mcp-only`    | Skip CLAUDE.md rules.                                           |
+| `--uninstall`   | Remove instead of install.                                      |
+| `--dry-run`     | Preview paths and changes without writing.                      |
+| `--yes`, `-y`   | Don't prompt for confirmation.                                  |
 
 Currently supported targets: `claude-code`. Planned: `claude-desktop`,
 `cursor`, `codex`, `qwen` — contributions welcome (each is one
@@ -68,12 +69,12 @@ Manual MCP entry (if you don't want to use `setup`):
 
 ```json
 {
-  "mcpServers": {
-    "code-skeleton": {
-      "command": "npx",
-      "args": ["-y", "code-skeleton-mcp"]
-    }
-  }
+	"mcpServers": {
+		"code-skeleton": {
+			"command": "npx",
+			"args": ["-y", "code-skeleton-mcp"]
+		}
+	}
 }
 ```
 
@@ -94,13 +95,13 @@ Run without arguments to start the MCP server on stdio.
 
 ## `get_outline` input
 
-| Field                | Type     | Default | Notes                                              |
-|----------------------|----------|---------|----------------------------------------------------|
-| `path`               | string   | —       | File or directory.                                  |
-| `max_depth`          | integer  | `2`     | Nesting depth of symbols returned.                  |
-| `include_docstrings` | boolean  | `true`  | Include first line of docstrings / JSDoc / Go docs. |
-| `include_private`    | boolean  | `false` | `_name`, Go lowercase, TS `private`.                |
-| `recursive`          | boolean  | `false` | If `path` is a directory, walk subdirectories.      |
+| Field                | Type    | Default | Notes                                               |
+| -------------------- | ------- | ------- | --------------------------------------------------- |
+| `path`               | string  | —       | File or directory.                                  |
+| `max_depth`          | integer | `2`     | Nesting depth of symbols returned.                  |
+| `include_docstrings` | boolean | `true`  | Include first line of docstrings / JSDoc / Go docs. |
+| `include_private`    | boolean | `false` | `_name`, Go lowercase, TS `private`.                |
+| `recursive`          | boolean | `false` | If `path` is a directory, walk subdirectories.      |
 
 ## Example
 
@@ -151,7 +152,7 @@ line in `registry.ts`.
 
 ```bash
 npm ci
-npm run lint          # biome check src/ tests/ scripts/
+npm run lint          # eslint .
 npm run typecheck     # tsc --noEmit
 npm test              # vitest run
 npm run build         # tsc -p tsconfig.build.json

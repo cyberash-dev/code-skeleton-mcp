@@ -1,5 +1,9 @@
 import { UnsupportedLanguageError } from "../../domain/errors.js";
-import { detectFromPath, isSupported, SUPPORTED_EXTENSIONS } from "../../domain/language.js";
+import {
+	detectFromPath,
+	isSupported,
+	SUPPORTED_EXTENSIONS,
+} from "../../domain/language.js";
 import type { Outline } from "../../domain/symbol.js";
 import type { CachePort } from "../../ports/cache.port.js";
 import type { FileSystemPort } from "../../ports/file-system.port.js";
@@ -16,7 +20,9 @@ export class GetOutlineUseCase {
 	async execute(input: GetOutlineInput): Promise<Outline | Outline[]> {
 		const stat = await this.fs.stat(input.path);
 		if (stat.isDirectory) {
-			const files = await this.fs.listFiles(input.path, { recursive: input.recursive });
+			const files = await this.fs.listFiles(input.path, {
+				recursive: input.recursive,
+			});
 			const supported = files.filter((f) => isSupported(f));
 			const out: Outline[] = [];
 			for (const f of supported) {
@@ -27,7 +33,10 @@ export class GetOutlineUseCase {
 		return this.outlineFile(input.path, input);
 	}
 
-	private async outlineFile(filePath: string, input: GetOutlineInput): Promise<Outline> {
+	private async outlineFile(
+		filePath: string,
+		input: GetOutlineInput,
+	): Promise<Outline> {
 		const lang = detectFromPath(filePath);
 		if (!lang) {
 			throw new UnsupportedLanguageError(filePath);

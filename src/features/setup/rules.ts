@@ -63,10 +63,16 @@ export function removeBlock(fileContent: string, block: RuleBlock): string {
 }
 
 export function hasBlock(fileContent: string, block: RuleBlock): boolean {
-	return fileContent.includes(block.startMarker) && fileContent.includes(block.endMarker);
+	return (
+		fileContent.includes(block.startMarker) &&
+		fileContent.includes(block.endMarker)
+	);
 }
 
 function buildBlockRegex(startMarker: string, endMarker: string): RegExp {
 	const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	return new RegExp(`${escapeRegex(startMarker)}[\\s\\S]*?${escapeRegex(endMarker)}`, "g");
+	return new RegExp(
+		`${escapeRegex(startMarker)}[\\s\\S]*?${escapeRegex(endMarker)}`,
+		"g",
+	);
 }

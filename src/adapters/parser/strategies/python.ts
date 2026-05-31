@@ -20,7 +20,7 @@ export const pythonStrategy: LanguageStrategy = {
 		const headNode = decoratedHead(defNode) ?? defNode;
 		const body = defNode.childForFieldName("body");
 		const end = body ? body.startIndex : defNode.endIndex;
-		// Signature starts at headNode (includes decorators) and ends before body.
+		/* Signature starts at headNode (includes decorators) and ends before body. */
 		return source.slice(headNode.startIndex, end).trimEnd();
 	},
 
@@ -29,7 +29,9 @@ export const pythonStrategy: LanguageStrategy = {
 		if (!body) {
 			return undefined;
 		}
-		const first = body.namedChildren.find((n) => n.type === "expression_statement");
+		const first = body.namedChildren.find(
+			(n) => n.type === "expression_statement",
+		);
 		if (!first) {
 			return undefined;
 		}
@@ -37,14 +39,16 @@ export const pythonStrategy: LanguageStrategy = {
 		if (!str) {
 			return undefined;
 		}
-		// Extract inner text, strip quotes and """ triple quotes.
+		/* Extract inner text, strip quotes and """ triple quotes. */
 		const raw = str.text;
 		const stripped = stripPythonString(raw);
 		return firstLine(stripped);
 	},
 
 	isPrivate(name: string): boolean {
-		return name.startsWith("_") && !(name.startsWith("__") && name.endsWith("__"));
+		return (
+			name.startsWith("_") && !(name.startsWith("__") && name.endsWith("__"))
+		);
 	},
 
 	isOverload(defNode: Node): boolean {
@@ -74,7 +78,7 @@ function decoratedHead(defNode: Node): Node | null {
 }
 
 function stripPythonString(raw: string): string {
-	// Strip leading prefix (r, b, u, f, etc.)
+	/* Strip leading prefix (r, b, u, f, etc.) */
 	let s = raw.replace(/^[rRbBuUfF]{0,3}/, "");
 	if (s.startsWith('"""') || s.startsWith("'''")) {
 		s = s.slice(3, -3);

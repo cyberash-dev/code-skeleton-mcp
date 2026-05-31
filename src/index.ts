@@ -18,6 +18,9 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-	logger.error("fatal", err instanceof Error ? (err.stack ?? err.message) : err);
+	logger.error(
+		"fatal",
+		err instanceof Error ? (err.stack ?? err.message) : err,
+	);
 	process.exit(1);
 });

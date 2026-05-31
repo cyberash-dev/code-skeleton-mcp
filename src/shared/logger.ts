@@ -1,9 +1,10 @@
-// stderr-only logger — MCP stdio uses stdout for protocol, so all logs must go to stderr.
+/* stderr-only logger — MCP stdio uses stdout for protocol, so all logs must go to stderr. */
 
 export const logger = {
 	info: (message: string, meta?: unknown): void => write("INFO", message, meta),
 	warn: (message: string, meta?: unknown): void => write("WARN", message, meta),
-	error: (message: string, meta?: unknown): void => write("ERROR", message, meta),
+	error: (message: string, meta?: unknown): void =>
+		write("ERROR", message, meta),
 	debug: (message: string, meta?: unknown): void => {
 		if (process.env.CODE_SKELETON_DEBUG) {
 			write("DEBUG", message, meta);

@@ -175,7 +175,9 @@ function refineNestedKinds(roots: BuiltSymbol[]): void {
 		for (const s of list) {
 			if (
 				parent &&
-				(parent.kind === "class" || parent.kind === "interface" || parent.kind === "struct")
+				(parent.kind === "class" ||
+					parent.kind === "interface" ||
+					parent.kind === "struct")
 			) {
 				if (s.kind === "function") {
 					s.kind =
@@ -211,7 +213,8 @@ function applyFilters(roots: BuiltSymbol[], opts: ParseOptions): BuiltSymbol[] {
 				continue;
 			}
 			if (depth >= maxDepth) {
-				const { children: _c, ...rest } = s;
+				const rest = { ...s };
+				delete rest.children;
 				out.push({ ...rest, node: s.node });
 			} else {
 				const filtered: BuiltSymbol = { ...s };

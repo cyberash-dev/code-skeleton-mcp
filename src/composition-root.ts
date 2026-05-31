@@ -1,7 +1,10 @@
 import { InMemoryCacheAdapter } from "./adapters/cache/in-memory.adapter.js";
 import { NodeFsAdapter } from "./adapters/file-system/node-fs.adapter.js";
 import { TreeSitterParserAdapter } from "./adapters/parser/tree-sitter.adapter.js";
-import { buildTargetRegistry, type TargetRegistry } from "./adapters/targets/registry.js";
+import {
+	buildTargetRegistry,
+	type TargetRegistry,
+} from "./adapters/targets/registry.js";
 import type { Outline } from "./domain/symbol.js";
 import { GetClassUseCase } from "./features/get-class/get-class.usecase.js";
 import { GetFunctionUseCase } from "./features/get-function/get-function.usecase.js";

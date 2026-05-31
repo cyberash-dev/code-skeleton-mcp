@@ -33,8 +33,15 @@ export interface InstallTarget {
 	status(): Promise<TargetStatus>;
 
 	applyRules(block: RuleBlock, opts: { dryRun: boolean }): Promise<ApplyResult>;
-	removeRules(block: RuleBlock, opts: { dryRun: boolean }): Promise<ApplyResult>;
+	removeRules(
+		block: RuleBlock,
+		opts: { dryRun: boolean },
+	): Promise<ApplyResult>;
 
-	applyMcp(name: string, entry: McpServerEntry, opts: { dryRun: boolean }): Promise<ApplyResult>;
+	applyMcp(
+		name: string,
+		entry: McpServerEntry,
+		opts: { dryRun: boolean },
+	): Promise<ApplyResult>;
 	removeMcp(name: string, opts: { dryRun: boolean }): Promise<ApplyResult>;
 }

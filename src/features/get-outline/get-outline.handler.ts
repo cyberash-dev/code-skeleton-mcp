@@ -1,6 +1,9 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { toolError, toolJsonResult } from "../../shared/tool-response.js";
-import { type GetOutlineInput, getOutlineInputSchema } from "./get-outline.schema.js";
+import {
+	type GetOutlineInput,
+	getOutlineInputSchema,
+} from "./get-outline.schema.js";
 import type { GetOutlineUseCase } from "./get-outline.usecase.js";
 
 export function makeGetOutlineHandler(useCase: GetOutlineUseCase) {

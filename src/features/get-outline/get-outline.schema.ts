@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 export const getOutlineInputSchema = z.object({
-	path: z.string().min(1).describe("Absolute or relative path to a file or directory."),
+	path: z
+		.string()
+		.min(1)
+		.describe("Absolute or relative path to a file or directory."),
 	max_depth: z
 		.number()
 		.int()

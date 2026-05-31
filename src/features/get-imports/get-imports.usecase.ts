@@ -36,10 +36,13 @@ export class GetImportsUseCase {
 		return { path: input.path, imports: enriched };
 	}
 
-	private async resolveRelative(dir: string, modulePath: string): Promise<string | undefined> {
+	private async resolveRelative(
+		dir: string,
+		modulePath: string,
+	): Promise<string | undefined> {
 		const base = path.resolve(dir, modulePath);
 		const candidates = [base];
-		// Try common extensions if module has none.
+		/* Try common extensions if module has none. */
 		if (!path.extname(base)) {
 			candidates.push(
 				`${base}.ts`,
@@ -52,9 +55,12 @@ export class GetImportsUseCase {
 			candidates.push(path.join(base, "index.ts"), path.join(base, "index.js"));
 			candidates.push(path.join(base, "__init__.py"));
 		}
-		// Also: swap .js → .ts (TS files often import via .js that resolves to .ts).
+		/* Also: swap .js → .ts (TS files often import via .js that resolves to .ts). */
 		if (base.endsWith(".js")) {
-			candidates.push(base.replace(/\.js$/, ".ts"), base.replace(/\.js$/, ".tsx"));
+			candidates.push(
+				base.replace(/\.js$/, ".ts"),
+				base.replace(/\.js$/, ".tsx"),
+			);
 		}
 		for (const c of candidates) {
 			if (await this.fs.exists(c)) {

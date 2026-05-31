@@ -1,10 +1,10 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  test: {
-    include: ['tests/**/*.test.ts'],
-    globals: false,
-    testTimeout: 10_000,
-    pool: 'threads',
-  },
+	test: {
+		include: ["tests/**/*.test.ts"],
+		globals: false,
+		testTimeout: 10_000,
+		pool: "threads",
+	},
 });
